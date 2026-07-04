@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prep Register">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B2A4A">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Prep Register — JEE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700;800&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B2A4A; --navy-deep:#132038;
+    --paper:#FAF7F0; --paper2:#F2ECDC; --card:#FFFFFF;
+    --rule:#DCD2B8; --rule-soft:#EAE2CC;
+    --ink:#2B2A25; --muted:#726A54; --faint:#A79E87;
+    --red:#B0392C; --amber:#C7862E; --green:#2F6F4E;
+    --physics:#2B5D8C; --chem:#2E7D6B; --maths:#7A4E9E;
+    --font-display:'Bitter',Georgia,serif;
+    --font-mono:'IBM Plex Mono',monospace;
+    --font-body:'Inter',-apple-system,'Helvetica Neue',sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh; padding-bottom:84px;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::placeholder{color:var(--faint);}
+  button,input,select,textarea{font-family:var(--font-body);}
+  button{transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease, background-color .12s ease, border-color .12s ease;}
+  button:active{transform:scale(.96);}
+
+  .banner{background:linear-gradient(155deg, var(--navy) 0%, var(--navy-deep) 100%); color:var(--paper); padding:18px 18px 16px; box-shadow:0 4px 16px rgba(19,32,56,.25);}
+  .banner-inner{max-width:640px; margin:0 auto;}
+  .banner-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .banner h1{margin:0; font-family:var(--font-display); font-weight:800; font-size:22px; letter-spacing:.2px;}
+  .banner .sub{font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; color:#C9B98A; text-transform:uppercase; margin-top:4px;}
+  .streak-chip{font-family:var(--font-mono); font-size:11px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:20px; padding:6px 12px; white-space:nowrap; backdrop-filter:blur(2px);}
+  .quote{font-family:var(--font-display); font-style:italic; font-size:12.5px; color:#D8CCA8; margin-top:11px; border-top:1px dashed rgba(255,255,255,.2); padding-top:10px;}
+
+  .statrow{display:flex; gap:9px; max-width:640px; margin:-16px auto 0; padding:0 18px; position:relative; z-index:2;}
+  .statbox{flex:1; background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:12px 6px 10px; text-align:center; box-shadow:0 4px 14px rgba(27,42,74,.1); transition:transform .15s ease;}
+  .statbox .num{font-family:var(--font-mono); font-size:22px; font-weight:700;}
+  .statbox .lbl{font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:3px; font-weight:600;}
+
+  .tabbar{display:flex; max-width:640px; margin:18px auto 0; padding:0 18px; gap:4px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tabbtn{flex:0 0 auto; min-width:76px; padding:10px 10px; background:none; border:none; border-bottom:3px solid var(--rule-soft); color:var(--faint); font-size:12.5px; font-weight:600; cursor:pointer; letter-spacing:.2px; white-space:nowrap; transition:color .15s ease, border-color .15s ease;}
+  .tabbtn.active{color:var(--navy); font-weight:700;}
+  #tabChapters.active{border-bottom-color:var(--amber); color:var(--amber);}
+  #tabRevision.active{border-bottom-color:var(--green); color:var(--green);}
+  #tabTests.active{border-bottom-color:var(--red); color:var(--red);}
+  #tabChecklist.active{border-bottom-color:var(--physics); color:var(--physics);}
+  #tabAnnouncements.active{border-bottom-color:var(--maths); color:var(--maths);}
+  #tabApps.active{border-bottom-color:var(--chem); color:var(--chem);}
+
+  .statrow:empty{display:none;}
+
+  .sectionhead{border-bottom:2px solid var(--rule); padding-bottom:10px; margin-bottom:16px;}
+
+  .filterbar{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .filterchip{font-family:var(--font-mono); font-size:10.5px; font-weight:700; padding:5px 11px; border-radius:14px; border:1.5px solid var(--rule); background:#fff; color:var(--faint); cursor:pointer; letter-spacing:.3px; opacity:.55;}
+  .filterchip.active{opacity:1;}
+  .filterdivider{width:1px; background:var(--rule); margin:2px 4px;}
+  .revisegroup-lbl{font-family:var(--font-mono); font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin:14px 0 8px;}
+  .sectionhead h2{font-family:var(--font-display); font-size:18px; margin:0; font-weight:800;}
+  .sectionhead p{font-family:var(--font-mono); font-size:9.5px; color:var(--muted); margin:4px 0 0; letter-spacing:.5px; text-transform:uppercase;}
+
+  .wrap{max-width:640px; margin:0 auto; padding:16px 18px 40px;}
+
+  .chapcard{background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:14px 15px; margin-bottom:11px; cursor:pointer; box-shadow:0 2px 8px rgba(27,42,74,.05); transition:box-shadow .15s, transform .1s;}
+  .chapcard:active{box-shadow:inset 0 0 0 1.5px var(--amber); transform:scale(.99);}
+  .row1{display:flex; justify-content:space-between; align-items:center;}
+  .chapname{font-family:var(--font-display); font-size:16px; font-weight:700;}
+  .subjectdot{display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:7px;}
+  .chapcount{font-family:var(--font-mono); font-size:10.5px; color:var(--faint);}
+  .stamprow{display:flex; gap:10px; margin-top:11px; align-items:center;}
+  .stamp{
+    width:34px; height:34px; border-radius:50%; border:2.5px solid;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:800; font-size:14px;
+    flex-shrink:0; position:relative;
+  }
+  .stampcount{font-family:var(--font-mono); font-size:12px; font-weight:600; color:var(--muted);}
+  .stampgroup{display:flex; align-items:center; gap:6px;}
+  .progressbar{height:5px; background:var(--rule-soft); border-radius:3px; margin-top:12px; overflow:hidden;}
+  .progressfill{height:100%; background:var(--green); border-radius:3px;}
+  .mastery-lbl{font-family:var(--font-mono); font-size:9px; color:var(--faint); margin-top:5px; letter-spacing:.3px;}
+  .flame{font-size:12px; margin-left:4px;}
+
+  .backbtn{display:flex; align-items:center; gap:6px; background:none; border:none; color:var(--navy); font-size:13px; cursor:pointer; padding:0 0 14px; font-weight:700; font-family:var(--font-body);}
+
+  .qcard{background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:11px 13px; margin-bottom:8px; display:flex; gap:11px; align-items:flex-start; box-shadow:0 2px 8px rgba(27,42,74,.05);}
+  .markstamp{
+    min-width:30px; height:30px; border-radius:50%; border:2px solid;
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display);
+    font-weight:800; font-size:13px; flex-shrink:0;
+  }
+  .qsource{font-size:13px; font-weight:600; color:var(--ink);}
+  .qnotes{font-size:12.5px; margin-top:3px; color:var(--muted);}
+  .qdate{font-family:var(--font-mono); font-size:9.5px; color:var(--faint); margin-top:5px;}
+  .delbtn{background:none; border:none; color:var(--faint); cursor:pointer; padding:2px; font-size:13px;}
+
+  .empty{text-align:center; padding:48px 14px; color:var(--faint); font-size:13px; line-height:1.6;}
+  .empty b{color:var(--muted); font-family:var(--font-display); display:block; font-size:14.5px; margin-bottom:5px;}
+
+  .fab{position:fixed; bottom:22px; right:20px; width:56px; height:56px; border-radius:50%; background:var(--navy); border:2px solid var(--amber); display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 6px 18px rgba(27,42,74,.35); font-size:26px; color:var(--paper); z-index:40; font-family:var(--font-display); transition:transform .15s ease, box-shadow .15s ease;}
+  .fab:active{transform:scale(.92) rotate(90deg); box-shadow:0 3px 10px rgba(27,42,74,.35);}
+
+  .overlay{position:fixed; inset:0; background:rgba(20,28,48,.55); backdrop-filter:blur(1px); display:flex; align-items:flex-end; justify-content:center; z-index:50; animation:fadeIn .15s ease;}
+  @keyframes fadeIn{from{opacity:0} to{opacity:1}}
+  .sheet{background:var(--paper); width:100%; max-width:640px; border-radius:20px 20px 0 0; padding:22px 20px 28px; max-height:88vh; overflow-y:auto; border-top:3px solid var(--amber); box-shadow:0 -8px 30px rgba(19,32,56,.2); animation:slideUp .2s ease;}
+  @keyframes slideUp{from{transform:translateY(24px); opacity:.6} to{transform:translateY(0); opacity:1}}
+  .sheet h3{margin:0 0 18px; font-family:var(--font-display); font-size:18px; display:flex; justify-content:space-between; align-items:center;}
+  .closebtn{background:none; border:none; cursor:pointer; font-size:20px; color:var(--muted); line-height:1;}
+  .fieldlabel{font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;}
+  .inp{width:100%; padding:11px 12px; font-size:13.5px; border:1.5px solid var(--rule); border-radius:9px; margin-bottom:13px; background:#FFFFFF; color:var(--ink); transition:border-color .15s ease, box-shadow .15s ease;}
+  .inp:focus{outline:none; border-color:var(--amber); box-shadow:0 0 0 3px rgba(199,134,46,.15);}
+  .pillrow{display:flex; gap:6px; margin-bottom:13px; flex-wrap:wrap;}
+  .pill{padding:9px 11px; font-size:12px; border-radius:20px; cursor:pointer; border:1.5px solid var(--rule); background:#fff; color:var(--muted); font-weight:600; flex:1; text-align:center; transition:all .12s ease;}
+  .pill.active{color:#fff; font-weight:700; border-color:transparent; box-shadow:0 2px 8px rgba(27,42,74,.18);}
+  .pill:active{transform:scale(.96);}
+  .primarybtn{width:100%; padding:14px; font-size:14px; font-weight:700; color:var(--paper); background:var(--navy); border:none; border-radius:10px; cursor:pointer; margin-top:6px; font-family:var(--font-display); letter-spacing:.3px; box-shadow:0 4px 14px rgba(27,42,74,.25);}
+
+  .testcard{background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:14px 15px; margin-bottom:11px; box-shadow:0 2px 8px rgba(27,42,74,.05);}
+  .testtop{display:flex; justify-content:space-between; align-items:flex-start;}
+  .testname{font-family:var(--font-display); font-size:15.5px; font-weight:700;}
+  .testdate{font-family:var(--font-mono); font-size:10px; color:var(--faint); margin-top:3px;}
+  .testscore{font-family:var(--font-mono); font-size:19px; font-weight:600; text-align:right;}
+  .testpct{font-family:var(--font-mono); font-size:10px; color:var(--faint); text-align:right;}
+  .subjsplit{display:flex; gap:6px; margin-top:10px;}
+  .subjbox{flex:1; background:var(--paper2); border-radius:7px; padding:6px 6px; text-align:center;}
+  .subjbox .l{font-size:8.5px; color:var(--muted); font-weight:700; letter-spacing:.3px;}
+  .subjbox .v{font-family:var(--font-mono); font-size:12.5px; font-weight:600; margin-top:2px;}
+  .mistakes{margin-top:10px; font-size:12.5px; color:var(--ink); border-top:1px dashed var(--rule); padding-top:9px; line-height:1.5;}
+  .mistakes b{font-weight:700; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px;}
+
+  .chartbox{background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:14px 12px 8px; margin-bottom:18px; box-shadow:0 2px 8px rgba(27,42,74,.05);}
+  .chartlbl{font-family:var(--font-mono); font-size:10px; color:var(--muted); padding:0 6px 10px; letter-spacing:.4px; text-transform:uppercase;}
+
+  .accuracybar-wrap{display:flex; align-items:center; gap:8px; margin-top:6px;}
+  .accuracybar{flex:1; height:6px; background:var(--rule-soft); border-radius:3px; overflow:hidden;}
+  .accuracyfill{height:100%; border-radius:3px;}
+  .accuracypct{font-family:var(--font-mono); font-size:11px; font-weight:600; min-width:34px; text-align:right;}
+
+  .roundtag{font-family:var(--font-mono); font-size:9.5px; font-weight:700; padding:3px 8px; border-radius:12px; letter-spacing:.3px; text-transform:uppercase;}
+
+  .toast{position:fixed; bottom:94px; left:50%; transform:translateX(-50%) translateY(6px); background:var(--navy); color:var(--paper); padding:11px 22px; border-radius:22px; font-size:13px; z-index:60; opacity:0; transition:opacity .25s ease, transform .25s ease; font-family:var(--font-body); font-weight:600; border:1px solid var(--amber); box-shadow:0 6px 20px rgba(19,32,56,.35); pointer-events:none;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* ---------- Today strip ---------- */
+  .todaystrip{display:flex; gap:7px; max-width:640px; margin:12px auto 0; padding:0 18px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+  .todaystrip::-webkit-scrollbar{display:none;}
+  .todaystrip:empty{display:none;}
+  .chip{flex:0 0 auto; display:flex; align-items:center; gap:6px; background:var(--card); border:1.5px solid var(--rule); border-radius:20px; padding:6px 13px; font-size:11.5px; font-weight:600; white-space:nowrap; cursor:pointer; max-width:230px; overflow:hidden; text-overflow:ellipsis; box-shadow:0 2px 6px rgba(27,42,74,.06); transition:transform .12s ease;}
+  .chip:active{transform:scale(.96);}
+  .chip.pin{border-color:var(--amber); color:var(--amber);}
+  .chip.check{border-color:var(--green); color:var(--green);}
+
+  /* ---------- Checklist ---------- */
+  .checklist-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .checklist-progress{flex:1; margin-right:12px;}
+  .resetbtn{background:none; border:1px solid var(--rule); color:var(--muted); font-size:11px; padding:6px 11px; border-radius:16px; cursor:pointer; font-weight:600;}
+  .taskrow{display:flex; align-items:flex-start; gap:11px; background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:11px 13px; margin-bottom:8px; box-shadow:0 2px 8px rgba(27,42,74,.05); transition:opacity .15s ease;}
+  .taskcheck{min-width:24px; height:24px; border-radius:50%; border:2px solid var(--rule); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; font-size:13px; color:transparent; margin-top:1px; transition:all .15s ease;}
+  .taskcheck:active{transform:scale(.88);}
+  .taskcheck.done{background:var(--green); border-color:var(--green); color:#fff;}
+  .tasktext{flex:1; font-size:13.5px; color:var(--ink);}
+  .tasktext.done{text-decoration:line-through; color:var(--faint);}
+  .taskpriority{font-family:var(--font-mono); font-size:9px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; margin-top:3px; display:inline-block;}
+  .taskactions{display:flex; gap:6px; flex-shrink:0;}
+
+  /* ---------- Announcements ---------- */
+  .annc-card{background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:13px 15px; margin-bottom:10px; position:relative; box-shadow:0 2px 8px rgba(27,42,74,.05);}
+  .annc-card.pinned{border-color:var(--amber); background:#FFFBF3;}
+  .annc-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .annc-cat{font-family:var(--font-mono); font-size:9px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--muted);}
+  .annc-text{font-size:13.5px; color:var(--ink); margin-top:6px; line-height:1.5;}
+  .annc-date{font-family:var(--font-mono); font-size:9.5px; color:var(--faint); margin-top:8px;}
+  .annc-actions{display:flex; gap:8px; margin-top:10px;}
+  .iconbtn{background:none; border:none; cursor:pointer; font-size:13px; color:var(--faint); padding:2px 4px;}
+  .iconbtn.pinned{color:var(--amber);}
+
+  /* ---------- Apps ---------- */
+  .app-card{display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:12px 14px; margin-bottom:9px; box-shadow:0 2px 8px rgba(27,42,74,.05);}
+  .app-icon{font-size:26px; width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:var(--paper2); border-radius:10px; flex-shrink:0;}
+  .app-body{flex:1; min-width:0; cursor:pointer;}
+  .app-name{font-family:var(--font-display); font-size:14.5px; font-weight:700;}
+  .app-desc{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .app-actions{display:flex; flex-direction:column; gap:4px; flex-shrink:0;}
+
+  /* ---------- Error Log / Revision filters ---------- */
+  .filterrow{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; align-items:center;}
+  .filterpill{padding:6px 12px; font-size:11.5px; border-radius:16px; cursor:pointer; border:1.5px solid var(--rule); background:#fff; color:var(--muted); font-weight:600; transition:all .12s ease;}
+  .filterpill.active{color:#fff; border-color:transparent; box-shadow:0 2px 8px rgba(27,42,74,.15);}
+  .filterpill:active{transform:scale(.95);}
+  .hidebtn{background:none; border:1px solid var(--rule); color:var(--muted); font-size:10.5px; padding:5px 10px; border-radius:14px; cursor:pointer; font-weight:600; white-space:nowrap;}
+
+  /* ---------- Task time / flexible ---------- */
+  .tasktime{font-family:var(--font-mono); font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; margin-top:4px; display:inline-block; margin-right:6px;}
+  .tasktime.fixed{background:#EAF0F6; color:var(--physics);}
+  .tasktime.flex{background:var(--paper2); color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-inner">
+    <div class="banner-top">
+      <div>
+        <h1>Prep Register</h1>
+        <div class="sub">JEE 2028 · Error Log &amp; Analysis</div>
+      </div>
+      <div class="streak-chip" id="streakTag">🔥 0-day streak</div>
+    </div>
+    <div class="quote" id="quoteLine"></div>
+  </div>
+</div>
+
+<div class="statrow" id="statRow"></div>
+
+<div class="todaystrip" id="todayStrip"></div>
+
+<div class="tabbar">
+  <button class="tabbtn active" id="tabChapters" onclick="setTab('chapters')">Error Log</button>
+  <button class="tabbtn" id="tabRevision" onclick="setTab('revision')">Revision</button>
+  <button class="tabbtn" id="tabTests" onclick="setTab('tests')">Tests</button>
+  <button class="tabbtn" id="tabChecklist" onclick="setTab('checklist')">Checklist</button>
+  <button class="tabbtn" id="tabAnnouncements" onclick="setTab('announcements')">Notices</button>
+  <button class="tabbtn" id="tabApps" onclick="setTab('apps')">Apps</button>
+</div>
+
+<div class="wrap" id="mainWrap"></div>
+
+<button class="fab" id="fabBtn">+</button>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= Data layer (localStorage) ================= */
+const LS_Q = 'prepreg_questions_v1';
+const LS_T = 'prepreg_tests_v1';
+const LS_R = 'prepreg_revisions_v1';
+const LS_S = 'prepreg_streak_v1';
+const LS_CHECK = 'prepreg_checklist_v1';
+const LS_ANNC = 'prepreg_announcements_v1';
+const LS_APPS = 'prepreg_apps_v1';
+const LS_HIDESTATS = 'prepreg_hidestats_v1';
+
+function load(key, fallback){ try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; } }
+function save(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+
+let questions = load(LS_Q, []);
+let tests = load(LS_T, []);
+let revisions = load(LS_R, []);
+let streakDates = load(LS_S, []);
+let tasks = load(LS_CHECK, []);
+let announcements = load(LS_ANNC, []);
+let apps = load(LS_APPS, []);
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function fmtDate(iso){
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+}
+function fmtTime(hhmm){
+  if(!hhmm) return '';
+  const [h,m] = hhmm.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${period}`;
+}
+function markActivity(){
+  const t = todayStr();
+  if(!streakDates.includes(t)){ streakDates.push(t); save(LS_S, streakDates); }
+}
+function currentStreak(){
+  let count = 0; let d = new Date();
+  const set = new Set(streakDates);
+  while(true){
+    const iso = d.toISOString().slice(0,10);
+    if(set.has(iso)){ count++; d.setDate(d.getDate()-1); } else break;
+  }
+  return count;
+}
+function hashRotation(id){
+  let h = 0;
+  for(let i=0;i<id.length;i++) h = (h*31 + id.charCodeAt(i)) % 1000;
+  return (h % 13) - 6;
+}
+
+const SUBJECTS = ['Physics','Chemistry','Maths'];
+const SUBJECT_COLOR = { Physics:'var(--physics)', Chemistry:'var(--chem)', Maths:'var(--maths)' };
+const MARK_COLOR = { A:'var(--red)', B:'var(--amber)', C:'var(--green)' };
+const MARK_LABEL = { A:"Wrong / couldn't solve", B:'Right, but tricky / good', C:'Easy, no doubt' };
+
+const REVISION_TYPES = ['HW','Error Log','PYQ','Reference','Other'];
+const REVISION_TYPE_COLOR = {
+  'HW':'var(--physics)', 'Error Log':'var(--red)', 'PYQ':'var(--amber)',
+  'Reference':'var(--maths)', 'Other':'var(--muted)'
+};
+function revisionTypeOf(r){ return r.type || 'Other'; }
+
+const QUOTES = [
+  "Every wrong question today is one less mistake on BTEST day.",
+  "You don't need to know everything — just what's tested, cold.",
+  "Small consistent revision beats one big cram, every time.",
+  "Track it, fix it, forget it — that's the whole game.",
+  "The goal isn't more questions. It's fewer repeated mistakes.",
+  "Rank comes from accuracy on what you already know. Protect it."
+];
+
+let activeTab = 'chapters';
+let openChapter = null;
+let chapterSubjectFilter = 'All';
+let statsHidden = load(LS_HIDESTATS, false);
+
+function el(id){ return document.getElementById(id); }
+function showToast(msg){
+  const t = el('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1700);
+}
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return (s||'').replace(/'/g, "\\'"); }
+
+function setTab(tab){
+  activeTab = tab; openChapter = null;
+  el('tabChapters').classList.toggle('active', tab==='chapters');
+  el('tabRevision').classList.toggle('active', tab==='revision');
+  el('tabTests').classList.toggle('active', tab==='tests');
+  el('tabChecklist').classList.toggle('active', tab==='checklist');
+  el('tabAnnouncements').classList.toggle('active', tab==='announcements');
+  el('tabApps').classList.toggle('active', tab==='apps');
+  render();
+}
+
+function render(){
+  el('quoteLine').textContent = QUOTES[new Date().getDate() % QUOTES.length];
+  el('streakTag').textContent = `🔥 ${currentStreak()}-day streak`;
+  el('statRow').innerHTML = (activeTab === 'chapters' && !statsHidden) ? renderStatRowHtml(chapterSubjectFilter) : '';
+  renderTodayStrip();
+  if(activeTab === 'chapters') renderChapters();
+  else if(activeTab === 'revision') renderRevision();
+  else if(activeTab === 'tests') renderTests();
+  else if(activeTab === 'checklist') renderChecklist();
+  else if(activeTab === 'announcements') renderAnnouncements();
+  else renderApps();
+}
+
+function renderTodayStrip(){
+  const pinned = announcements.filter(a => a.pinned);
+  const totalTasks = tasks.length;
+  const doneTasks = tasks.filter(t => t.done).length;
+  let html = '';
+  pinned.forEach(a => {
+    html += `<div class="chip pin" onclick="setTab('announcements')">📌 ${escapeHtml(a.text.slice(0,40))}${a.text.length>40?'…':''}</div>`;
+  });
+  if(totalTasks > 0){
+    html += `<div class="chip check" onclick="setTab('checklist')">✅ ${doneTasks}/${totalTasks} tasks today</div>`;
+  }
+  el('todayStrip').innerHTML = html;
+}
+
+function renderStatRowHtml(subjectFilter){
+  const counts = { A:0, B:0, C:0 };
+  questions.forEach(q => {
+    if(subjectFilter && subjectFilter !== 'All' && q.subject !== subjectFilter) return;
+    if(counts[q.mark] !== undefined) counts[q.mark]++;
+  });
+  return ['A','B','C'].map(m => `
+    <div class="statbox">
+      <div class="num" style="color:${MARK_COLOR[m]}">${counts[m]}</div>
+      <div class="lbl">${m} &middot; ${MARK_LABEL[m].split(' ')[0]}</div>
+    </div>
+  `).join('');
+}
+
+function getChapterGroups(subjectFilter){
+  const map = {};
+  questions.forEach(q => {
+    if(subjectFilter && subjectFilter !== 'All' && q.subject !== subjectFilter) return;
+    const key = q.subject + '||' + q.chapter;
+    if(!map[key]) map[key] = { subject:q.subject, chapter:q.chapter, items:[] };
+    map[key].items.push(q);
+  });
+  return Object.values(map).sort((a,b)=> a.chapter.localeCompare(b.chapter));
+}
+
+function toggleStatsHidden(){ statsHidden = !statsHidden; save(LS_HIDESTATS, statsHidden); render(); }
+function setSubjectFilter(s){ chapterSubjectFilter = s; render(); }
+
+function errorLogHead(){
+  return `
+    <div class="sectionhead" style="border-color:var(--amber); display:flex; justify-content:space-between; align-items:flex-end;">
+      <div><h2 style="color:var(--amber)">Error Log</h2><p>Every mistake, marked and chapter-wise</p></div>
+      <button class="hidebtn" onclick="toggleStatsHidden()">${statsHidden ? '👁 Show' : '🙈 Hide'} A/B/C</button>
+    </div>
+    <div class="filterrow">
+      ${['All', ...SUBJECTS].map(s => `<div class="filterpill ${chapterSubjectFilter===s?'active':''}" style="${chapterSubjectFilter===s?`background:${s==='All'?'var(--navy)':SUBJECT_COLOR[s]};border-color:${s==='All'?'var(--navy)':SUBJECT_COLOR[s]}`:''}" onclick="setSubjectFilter('${s}')">${s}</div>`).join('')}
+    </div>
+  `;
+}
+
+function renderChapters(){
+  if(openChapter){ renderChapterDetail(); return; }
+  const head = errorLogHead();
+
+  const groups = getChapterGroups(chapterSubjectFilter);
+  if(groups.length === 0){
+    el('mainWrap').innerHTML = head + `<div class="empty"><b>No chapters here</b>Nothing logged for this subject yet. Tap + to add.</div>`;
+    return;
+  }
+
+  const bySubject = {};
+  groups.forEach(g => { (bySubject[g.subject] = bySubject[g.subject] || []).push(g); });
+  const subjectOrder = chapterSubjectFilter === 'All' ? SUBJECTS.filter(s => bySubject[s]) : [chapterSubjectFilter];
+
+  const bodyHtml = subjectOrder.map(subj => `
+    ${chapterSubjectFilter === 'All' ? `<div class="revisegroup-lbl" style="color:${SUBJECT_COLOR[subj]}"><span class="subjectdot" style="background:${SUBJECT_COLOR[subj]}"></span>${subj}</div>` : ''}
+    ${(bySubject[subj]||[]).map(g => chapterCardHtml(g)).join('')}
+  `).join('');
+
+  el('mainWrap').innerHTML = head + bodyHtml;
+}
+
+function chapterCardHtml(g){
+  const counts = { A:0, B:0, C:0 };
+  g.items.forEach(q => counts[q.mark]++);
+  const total = g.items.length;
+  const mastery = total ? Math.round((counts.C / total) * 100) : 0;
+  const flame = mastery >= 70 ? '<span class="flame">🔥</span>' : '';
+  return `
+    <div class="chapcard" onclick="openChapterView('${escapeAttr(g.subject)}','${escapeAttr(g.chapter)}')">
+      <div class="row1">
+        <div class="chapname"><span class="subjectdot" style="background:${SUBJECT_COLOR[g.subject]||'#999'}"></span>${escapeHtml(g.chapter)}${flame}</div>
+        <div class="chapcount">${total} LOGGED</div>
+      </div>
+      ${!statsHidden ? `
+      <div class="stamprow">
+        ${['A','B','C'].map(m => `
+          <div class="stampgroup">
+            <div class="stamp" style="border-color:${MARK_COLOR[m]}; color:${MARK_COLOR[m]}; transform:rotate(${hashRotation(g.chapter+m)}deg)">${m}</div>
+            <span class="stampcount">${counts[m]}</span>
+          </div>
+        `).join('')}
+      </div>` : ''}
+      <div class="progressbar"><div class="progressfill" style="width:${mastery}%"></div></div>
+      <div class="mastery-lbl">${mastery}% MASTERED (C-MARKED)</div>
+    </div>
+  `;
+}
+
+function openChapterView(subject, chapter){ openChapter = { subject, chapter }; render(); }
+
+function renderChapterDetail(){
+  const items = questions.filter(q => q.subject === openChapter.subject && q.chapter === openChapter.chapter);
+  const counts = { A:0, B:0, C:0 };
+  items.forEach(q => counts[q.mark]++);
+  el('mainWrap').innerHTML = `
+    <button class="backbtn" onclick="openChapter=null; render();">&larr; All chapters</button>
+    <div class="chapname" style="margin-bottom:10px;"><span class="subjectdot" style="background:${SUBJECT_COLOR[openChapter.subject]||'#999'}"></span>${escapeHtml(openChapter.chapter)}</div>
+    ${!statsHidden ? `
+    <div class="stamprow" style="margin-bottom:16px;">
+      ${['A','B','C'].map(m => `
+        <div class="stampgroup">
+          <div class="stamp" style="border-color:${MARK_COLOR[m]}; color:${MARK_COLOR[m]}">${m}</div>
+          <span class="stampcount">${counts[m]}</span>
+        </div>
+      `).join('')}
+    </div>` : '<div style="margin-bottom:16px;"></div>'}
+    ${items.length===0 ? '<div class="empty">No questions in this chapter yet.</div>' :
+      items.map(q => `
+        <div class="qcard">
+          <div class="markstamp" style="border-color:${MARK_COLOR[q.mark]}; color:${MARK_COLOR[q.mark]}">${q.mark}</div>
+          <div style="flex:1; min-width:0;">
+            <div class="qsource">${escapeHtml(q.source)}</div>
+            ${q.notes ? `<div class="qnotes">${escapeHtml(q.notes)}</div>` : ''}
+            <div class="qdate">${fmtDate(q.createdAt)}</div>
+          </div>
+          <div class="taskactions">
+            <button class="iconbtn" onclick='openQuestionForm(${JSON.stringify(q)})'>✎</button>
+            <button class="iconbtn" onclick="removeQuestion('${q.id}')">✕</button>
+          </div>
+        </div>
+      `).join('')
+    }
+  `;
+}
+
+function removeQuestion(id){ questions = questions.filter(q => q.id !== id); save(LS_Q, questions); render(); }
+
+let revisionSubjectFilter = 'All';
+function setRevisionSubjectFilter(s){ revisionSubjectFilter = s; render(); }
+
+function renderRevision(){
+  let html = `<div class="sectionhead" style="border-color:var(--green)"><h2 style="color:var(--green)">Revision Analysis</h2><p>Subject &amp; chapter-wise accuracy</p></div>`;
+
+  html += `
+    <div class="filterrow">
+      ${['All', ...SUBJECTS].map(s => `<div class="filterpill ${revisionSubjectFilter===s?'active':''}" style="${revisionSubjectFilter===s?`background:${s==='All'?'var(--navy)':SUBJECT_COLOR[s]};border-color:${s==='All'?'var(--navy)':SUBJECT_COLOR[s]}`:''}" onclick="setRevisionSubjectFilter('${s}')">${s}</div>`).join('')}
+    </div>
+  `;
+
+  const filtered = revisionSubjectFilter === 'All' ? revisions : revisions.filter(r => r.subject === revisionSubjectFilter);
+
+  if(filtered.length > 0){
+    const totalAttempted = filtered.reduce((s,r)=>s+r.attempted,0);
+    const totalCorrect = filtered.reduce((s,r)=>s+r.correct,0);
+    const overallPct = totalAttempted ? Math.round((totalCorrect/totalAttempted)*100) : 0;
+    const color = overallPct>=70 ? 'var(--green)' : overallPct>=45 ? 'var(--amber)' : 'var(--red)';
+    html += `
+      <div class="chartbox">
+        <div class="chartlbl">Overall Revision Accuracy</div>
+        <div class="accuracybar-wrap" style="padding:0 6px 12px;">
+          <div class="accuracybar"><div class="accuracyfill" style="width:${overallPct}%; background:${color}"></div></div>
+          <div class="accuracypct" style="color:${color}">${overallPct}%</div>
+        </div>
+      </div>
+    `;
+  }
+
+  const chapMap = {};
+  filtered.forEach(r => {
+    const key = r.subject + '||' + r.chapter;
+    if(!chapMap[key]) chapMap[key] = { subject:r.subject, chapter:r.chapter, sessions:[] };
+    chapMap[key].sessions.push(r);
+  });
+  const chapGroups = Object.values(chapMap).sort((a,b)=> a.chapter.localeCompare(b.chapter));
+
+  if(chapGroups.length === 0){
+    html += `<div class="empty"><b>No revision sessions yet</b>Log a revision session — tag it HW, Error Log, PYQ, Reference, or Other — to track accuracy per chapter.</div>`;
+  } else {
+    const bySubject = {};
+    chapGroups.forEach(g => { (bySubject[g.subject] = bySubject[g.subject] || []).push(g); });
+    const subjectOrder = revisionSubjectFilter === 'All' ? SUBJECTS.filter(s => bySubject[s]) : [revisionSubjectFilter];
+
+    subjectOrder.forEach(subj => {
+      if(revisionSubjectFilter === 'All'){
+        html += `<div class="revisegroup-lbl" style="color:${SUBJECT_COLOR[subj]}"><span class="subjectdot" style="background:${SUBJECT_COLOR[subj]}"></span>${subj}</div>`;
+      }
+      (bySubject[subj]||[]).forEach(g => {
+        const attempted = g.sessions.reduce((s,r)=>s+r.attempted,0);
+        const correct = g.sessions.reduce((s,r)=>s+r.correct,0);
+        const pct = attempted ? Math.round((correct/attempted)*100) : 0;
+        const color = pct>=70 ? 'var(--green)' : pct>=45 ? 'var(--amber)' : 'var(--red)';
+        html += `
+          <div class="testcard">
+            <div class="row1">
+              <div class="chapname"><span class="subjectdot" style="background:${SUBJECT_COLOR[g.subject]||'#999'}"></span>${escapeHtml(g.chapter)}</div>
+              <div class="chapcount">${g.sessions.length} SESSION${g.sessions.length>1?'S':''}</div>
+            </div>
+            <div class="accuracybar-wrap">
+              <div class="accuracybar"><div class="accuracyfill" style="width:${pct}%; background:${color}"></div></div>
+              <div class="accuracypct" style="color:${color}">${pct}%</div>
+            </div>
+            <div style="margin-top:12px;">
+              ${g.sessions.map(r => {
+                const type = revisionTypeOf(r);
+                const tcolor = REVISION_TYPE_COLOR[type] || 'var(--muted)';
+                return `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-top:1px dashed var(--rule);">
+                  <div>
+                    <span class="roundtag" style="background:${tcolor}22; color:${tcolor}">${escapeHtml(type)}</span>
+                    <span class="qdate" style="margin-left:8px;">${fmtDate(r.date)}</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-family:var(--font-mono); font-size:12px; font-weight:600;">${r.correct}/${r.attempted}</span>
+                    <button class="iconbtn" onclick='openRevisionForm(${JSON.stringify(r)})'>✎</button>
+                    <button class="delbtn" onclick="removeRevision('${r.id}')">&#10005;</button>
+                  </div>
+                </div>
+                ${r.notes ? `<div class="qnotes" style="padding-bottom:4px;">${escapeHtml(r.notes)}</div>` : ''}
+              `;}).join('')}
+            </div>
+          </div>
+        `;
+      });
+    });
+  }
+
+  el('mainWrap').innerHTML = html;
+}
+
+function removeRevision(id){ revisions = revisions.filter(r => r.id !== id); save(LS_R, revisions); render(); }
+
+function renderTests(){
+  let html = `<div class="sectionhead" style="border-color:var(--red)"><h2 style="color:var(--red)">Test Analysis</h2><p>Score trend &amp; post-test breakdown</p></div>`;
+  if(tests.length > 1){
+    const sorted = [...tests].sort((a,b)=> a.date > b.date ? 1 : -1);
+    const points = sorted.map(t => t.total ? Math.round((t.score/t.total)*100) : 0);
+    html += `<div class="chartbox"><div class="chartlbl">Score Trend (%)</div>${renderSvgChart(points)}</div>`;
+  }
+  if(tests.length === 0){
+    html += `<div class="empty"><b>No tests logged yet</b>Tap + to add your first test analysis.</div>`;
+  } else {
+    tests.forEach(t => {
+      const pct = t.total ? Math.round((t.score/t.total)*100) : null;
+      const color = pct===null ? 'var(--navy)' : (pct>=60 ? 'var(--green)' : pct>=40 ? 'var(--amber)' : 'var(--red)');
+      html += `
+        <div class="testcard">
+          <div class="testtop">
+            <div>
+              <div class="testname">${escapeHtml(t.name)}</div>
+              <div class="testdate">${fmtDate(t.date)}</div>
+            </div>
+            <div>
+              <div class="testscore" style="color:${color}">${t.score}/${t.total}</div>
+              ${pct!==null?`<div class="testpct">${pct}%</div>`:''}
+            </div>
+          </div>
+          ${(t.phy||t.chem||t.maths) ? `
+          <div class="subjsplit">
+            ${t.phy?`<div class="subjbox"><div class="l">PHYSICS</div><div class="v">${escapeHtml(t.phy)}</div></div>`:''}
+            ${t.chem?`<div class="subjbox"><div class="l">CHEM</div><div class="v">${escapeHtml(t.chem)}</div></div>`:''}
+            ${t.maths?`<div class="subjbox"><div class="l">MATHS</div><div class="v">${escapeHtml(t.maths)}</div></div>`:''}
+          </div>` : ''}
+          ${t.mistakes ? `<div class="mistakes"><b>To fix — </b>${escapeHtml(t.mistakes)}</div>` : ''}
+          <div style="display:flex; gap:14px; margin-top:10px;">
+            <button class="delbtn" style="font-size:11px;" onclick='openTestForm(${JSON.stringify(t)})'>✎ Edit</button>
+            <button class="delbtn" style="font-size:11px;" onclick="removeTest('${t.id}')">&#10005; Remove</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  el('mainWrap').innerHTML = html;
+}
+
+function renderSvgChart(points){
+  if(points.length===0) return '';
+  const w = 300, h = 100, pad = 8;
+  const stepX = (w - pad*2) / Math.max(points.length-1,1);
+  const coords = points.map((p,i)=>{
+    const x = pad + i*stepX;
+    const y = h - pad - (p/100)*(h-pad*2);
+    return [x,y];
+  });
+  const pathD = coords.map((c,i)=> (i===0?'M':'L')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
+  const dots = coords.map(c=>`<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="3.2" fill="#C7862E"/>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="120" preserveAspectRatio="none" style="overflow:visible">
+    <path d="${pathD}" fill="none" stroke="#C7862E" stroke-width="2.2"/>
+    ${dots}
+  </svg>`;
+}
+
+function removeTest(id){ tests = tests.filter(t => t.id !== id); save(LS_T, tests); render(); }
+
+/* ================= CHECKLIST TAB ================= */
+const PRIORITY_COLOR = { High:'var(--red)', Medium:'var(--amber)', Low:'var(--green)' };
+
+function renderChecklist(){
+  const total = tasks.length;
+  const done = tasks.filter(t => t.done).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  let html = `<div class="sectionhead" style="border-color:var(--physics)"><h2 style="color:var(--physics)">Daily Checklist</h2><p>Today's tasks, prioritised</p></div>`;
+  html += `
+    <div class="checklist-head">
+      <div class="checklist-progress">
+        <div class="accuracybar-wrap">
+          <div class="accuracybar"><div class="accuracyfill" style="width:${pct}%; background:var(--green)"></div></div>
+          <div class="accuracypct">${done}/${total}</div>
+        </div>
+      </div>
+      ${total>0 ? `<button class="resetbtn" onclick="resetChecklist()">Reset all</button>` : ''}
+    </div>
+  `;
+  if(total === 0){
+    html += `<div class="empty"><b>Checklist is empty</b>Tap + to add today's first task.</div>`;
+  } else {
+    const sorted = [...tasks].sort((a,b)=> {
+      if(a.done !== b.done) return a.done - b.done;
+      const aKey = a.flexible ? '99:99' : (a.time || '99:98');
+      const bKey = b.flexible ? '99:99' : (b.time || '99:98');
+      return aKey.localeCompare(bKey);
+    });
+    sorted.forEach(t => {
+      html += `
+        <div class="taskrow">
+          <div class="taskcheck ${t.done?'done':''}" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
+          <div style="flex:1;">
+            <div class="tasktext ${t.done?'done':''}">${escapeHtml(t.text)}</div>
+            ${t.flexible ? `<span class="tasktime flex">🕊 Flexible</span>` : (t.time ? `<span class="tasktime fixed">⏰ ${fmtTime(t.time)}</span>` : '')}
+            <span class="taskpriority" style="color:${PRIORITY_COLOR[t.priority]||PRIORITY_COLOR.Medium}">${t.priority||'Medium'}</span>
+          </div>
+          <div class="taskactions">
+            <button class="iconbtn" onclick='openTaskForm(${JSON.stringify(t)})'>✎</button>
+            <button class="iconbtn" onclick="removeTask('${t.id}')">✕</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  el('mainWrap').innerHTML = html;
+}
+
+function toggleTask(id){
+  tasks = tasks.map(t => t.id===id ? {...t, done:!t.done} : t);
+  save(LS_CHECK, tasks);
+  if(tasks.find(t=>t.id===id).done) markActivity();
+  render();
+}
+function removeTask(id){ tasks = tasks.filter(t => t.id !== id); save(LS_CHECK, tasks); render(); }
+function resetChecklist(){ tasks = tasks.map(t => ({...t, done:false})); save(LS_CHECK, tasks); showToast('Checklist reset ✓'); render(); }
+
+function openTaskForm(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  let priority = existing ? existing.priority : 'Medium';
+  let flexible = existing ? !!existing.flexible : false;
+  overlay.innerHTML = `
+    <div class="sheet">
+      <h3>${isEdit?'Edit':'Add'} Task <button class="closebtn" data-close>&times;</button></h3>
+      <div class="fieldlabel">Task</div>
+      <input class="inp" id="taskText" placeholder="e.g. Finish Physics DPP" value="${isEdit?escapeAttr(existing.text):''}">
+      <div class="fieldlabel">Timing</div>
+      <div class="pillrow" id="flexPills"></div>
+      <div id="timeFieldWrap">
+        <input class="inp" id="taskTime" type="time" value="${isEdit&&existing.time?existing.time:''}">
+      </div>
+      <div class="fieldlabel">Priority</div>
+      <div class="pillrow" id="prioPills"></div>
+      <button class="primarybtn" id="saveTaskBtn">${isEdit?'Save changes':'Add task'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  function paintFlex(){
+    el('flexPills').innerHTML = `
+      <div class="pill ${!flexible?'active':''}" style="${!flexible?'background:var(--physics);border-color:var(--physics)':''}" data-v="0">⏰ Fixed time</div>
+      <div class="pill ${flexible?'active':''}" style="${flexible?'background:var(--muted);border-color:var(--muted)':''}" data-v="1">🕊 Flexible (anytime)</div>
+    `;
+    el('flexPills').querySelectorAll('.pill').forEach(p => p.onclick = () => { flexible = p.dataset.v==='1'; paintFlex(); paintTimeVisibility(); });
+  }
+  function paintTimeVisibility(){
+    el('timeFieldWrap').style.display = flexible ? 'none' : 'block';
+  }
+  function paintPrio(){
+    el('prioPills').innerHTML = ['High','Medium','Low'].map(p => `<div class="pill ${p===priority?'active':''}" style="${p===priority?`background:${PRIORITY_COLOR[p]};border-color:${PRIORITY_COLOR[p]}`:''}" data-p="${p}">${p}</div>`).join('');
+    el('prioPills').querySelectorAll('.pill').forEach(el2 => el2.onclick = () => { priority = el2.dataset.p; paintPrio(); });
+  }
+  paintFlex(); paintTimeVisibility(); paintPrio();
+
+  overlay.querySelector('[data-close]').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  el('saveTaskBtn').onclick = () => {
+    const text = el('taskText').value.trim();
+    if(!text) { el('taskText').focus(); return; }
+    const time = flexible ? '' : el('taskTime').value;
+    if(isEdit){
+      tasks = tasks.map(t => t.id===existing.id ? {...t, text, priority, time, flexible} : t);
+    } else {
+      tasks.unshift({ id: uid(), text, priority, time, flexible, done:false, createdAt: todayStr() });
+      markActivity();
+    }
+    save(LS_CHECK, tasks);
+    overlay.remove();
+    showToast(isEdit?'Task updated ✓':'Task added ✓');
+    render();
+  };
+}
+
+/* ================= ANNOUNCEMENTS TAB ================= */
+const ANNC_CATEGORIES = ['Test','Batch Change','Notice','Holiday','Deadline'];
+
+function renderAnnouncements(){
+  const sorted = [...announcements].sort((a,b)=> (b.pinned - a.pinned) || (a.createdAt < b.createdAt ? 1 : -1));
+  let html = `<div class="sectionhead" style="border-color:var(--maths)"><h2 style="color:var(--maths)">Announcements</h2><p>Tests, batch changes &amp; notices</p></div>`;
+  if(sorted.length === 0){
+    html += `<div class="empty"><b>No announcements yet</b>Tap + to add a test date, batch change, or notice.</div>`;
+  } else {
+    sorted.forEach(a => {
+      html += `
+        <div class="annc-card ${a.pinned?'pinned':''}">
+          <div class="annc-top">
+            <span class="annc-cat">${escapeHtml(a.category||'Notice')}</span>
+            <button class="iconbtn ${a.pinned?'pinned':''}" onclick="togglePin('${a.id}')">${a.pinned?'📌':'📍'}</button>
+          </div>
+          <div class="annc-text">${escapeHtml(a.text)}</div>
+          <div class="annc-date">${fmtDate(a.createdAt)}</div>
+          <div class="annc-actions">
+            <button class="iconbtn" onclick='openAnnouncementForm(${JSON.stringify(a)})'>✎ Edit</button>
+            <button class="iconbtn" onclick="removeAnnouncement('${a.id}')">✕ Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  el('mainWrap').innerHTML = html;
+}
+
+function togglePin(id){ announcements = announcements.map(a => a.id===id ? {...a, pinned:!a.pinned} : a); save(LS_ANNC, announcements); render(); }
+function removeAnnouncement(id){ announcements = announcements.filter(a => a.id !== id); save(LS_ANNC, announcements); render(); }
+
+function openAnnouncementForm(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  let category = existing ? existing.category : 'Notice';
+  let pinned = existing ? existing.pinned : false;
+  overlay.innerHTML = `
+    <div class="sheet">
+      <h3>${isEdit?'Edit':'Add'} Announcement <button class="closebtn" data-close>&times;</button></h3>
+      <div class="fieldlabel">Category</div>
+      <div class="pillrow" id="catPills"></div>
+      <div class="fieldlabel">Details</div>
+      <textarea class="inp" id="anncText" rows="3" placeholder="e.g. BTEST-3 moved to July 20">${isEdit?escapeHtml(existing.text):''}</textarea>
+      <div class="fieldlabel">Pin to top</div>
+      <div class="pillrow" id="pinPills"></div>
+      <button class="primarybtn" id="saveAnncBtn">${isEdit?'Save changes':'Add announcement'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  function paintCat(){
+    el('catPills').innerHTML = ANNC_CATEGORIES.map(c => `<div class="pill ${c===category?'active':''}" style="${c===category?'background:var(--navy);border-color:var(--navy)':''}" data-c="${c}">${c}</div>`).join('');
+    el('catPills').querySelectorAll('.pill').forEach(el2 => el2.onclick = () => { category = el2.dataset.c; paintCat(); });
+  }
+  function paintPin(){
+    el('pinPills').innerHTML = `
+      <div class="pill ${pinned?'active':''}" style="${pinned?'background:var(--amber);border-color:var(--amber)':''}" data-v="1">📌 Pinned</div>
+      <div class="pill ${!pinned?'active':''}" style="${!pinned?'background:var(--muted);border-color:var(--muted)':''}" data-v="0">Not pinned</div>
+    `;
+    el('pinPills').querySelectorAll('.pill').forEach(el2 => el2.onclick = () => { pinned = el2.dataset.v==='1'; paintPin(); });
+  }
+  paintCat(); paintPin();
+
+  overlay.querySelector('[data-close]').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  el('saveAnncBtn').onclick = () => {
+    const text = el('anncText').value.trim();
+    if(!text) { el('anncText').focus(); return; }
+    if(isEdit){
+      announcements = announcements.map(a => a.id===existing.id ? {...a, text, category, pinned} : a);
+    } else {
+      announcements.unshift({ id: uid(), text, category, pinned, createdAt: todayStr() });
+    }
+    save(LS_ANNC, announcements);
+    overlay.remove();
+    showToast(isEdit?'Announcement updated ✓':'Announcement added ✓');
+    render();
+  };
+}
+
+/* ================= APPS TAB ================= */
+function renderApps(){
+  const sorted = [...apps].sort((a,b)=> (a.order||0) - (b.order||0));
+  let html = `<div class="sectionhead" style="border-color:var(--chem)"><h2 style="color:var(--chem)">Apps</h2><p>Your shortcuts &amp; portals</p></div>`;
+  if(sorted.length === 0){
+    html += `<div class="empty"><b>No apps added yet</b>Tap + to add your first shortcut — Allen CBT, FIITJEE AITS, or anything else you use daily.</div>`;
+  } else {
+    sorted.forEach((a, idx) => {
+      html += `
+        <div class="app-card">
+          <div class="app-icon">${escapeHtml(a.icon||'🔗')}</div>
+          <div class="app-body" onclick="openApp('${escapeAttr(a.url)}')">
+            <div class="app-name">${escapeHtml(a.name)}</div>
+            ${a.description ? `<div class="app-desc">${escapeHtml(a.description)}</div>` : ''}
+          </div>
+          <div class="app-actions">
+            <button class="iconbtn" onclick="moveApp('${a.id}',-1)" ${idx===0?'disabled style="opacity:.3"':''}>↑</button>
+            <button class="iconbtn" onclick="moveApp('${a.id}',1)" ${idx===sorted.length-1?'disabled style="opacity:.3"':''}>↓</button>
+            <button class="iconbtn" onclick='openAppForm(${JSON.stringify(a)})'>✎</button>
+            <button class="iconbtn" onclick="removeApp('${a.id}')">✕</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  el('mainWrap').innerHTML = html;
+}
+
+function openApp(url){
+  if(!url) return;
+  const full = /^https?:\/\//i.test(url) ? url : 'https://' + url;
+  window.open(full, '_blank');
+}
+function removeApp(id){ apps = apps.filter(a => a.id !== id); save(LS_APPS, apps); render(); }
+function moveApp(id, dir){
+  const sorted = [...apps].sort((a,b)=> (a.order||0) - (b.order||0));
+  const idx = sorted.findIndex(a => a.id === id);
+  const swapIdx = idx + dir;
+  if(swapIdx < 0 || swapIdx >= sorted.length) return;
+  const tmp = sorted[idx].order;
+  sorted[idx].order = sorted[swapIdx].order;
+  sorted[swapIdx].order = tmp;
+  apps = sorted;
+  save(LS_APPS, apps);
+  render();
+}
+
+function openAppForm(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="sheet">
+      <h3>${isEdit?'Edit':'Add'} App <button class="closebtn" data-close>&times;</button></h3>
+      <div class="fieldlabel">Icon (emoji)</div>
+      <input class="inp" id="appIcon" placeholder="e.g. 📘" value="${isEdit?escapeAttr(existing.icon||''):''}" maxlength="4">
+      <div class="fieldlabel">App name</div>
+      <input class="inp" id="appName" placeholder="e.g. Allen CBT" value="${isEdit?escapeAttr(existing.name):''}">
+      <div class="fieldlabel">URL / Link</div>
+      <input class="inp" id="appUrl" placeholder="e.g. cbt.allen.ac.in" value="${isEdit?escapeAttr(existing.url):''}">
+      <div class="fieldlabel">Description (optional)</div>
+      <input class="inp" id="appDesc" placeholder="e.g. Weekly mock test portal" value="${isEdit?escapeAttr(existing.description||''):''}">
+      <button class="primarybtn" id="saveAppBtn">${isEdit?'Save changes':'Add app'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('[data-close]').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  el('saveAppBtn').onclick = () => {
+    const name = el('appName').value.trim();
+    const url = el('appUrl').value.trim();
+    if(!name || !url) return;
+    const icon = el('appIcon').value.trim() || '🔗';
+    const description = el('appDesc').value.trim();
+    if(isEdit){
+      apps = apps.map(a => a.id===existing.id ? {...a, name, url, icon, description} : a);
+    } else {
+      const maxOrder = apps.reduce((m,a)=>Math.max(m, a.order||0), 0);
+      apps.push({ id: uid(), name, url, icon, description, order: maxOrder+1 });
+    }
+    save(LS_APPS, apps);
+    overlay.remove();
+    showToast(isEdit?'App updated ✓':'App added ✓');
+    render();
+  };
+}
+
+el('fabBtn').addEventListener('click', () => {
+  if(activeTab === 'chapters') openQuestionForm();
+  else if(activeTab === 'revision') openRevisionForm();
+  else if(activeTab === 'tests') openTestForm();
+  else if(activeTab === 'checklist') openTaskForm(null);
+  else if(activeTab === 'announcements') openAnnouncementForm(null);
+  else openAppForm(null);
+});
+
+function openQuestionForm(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  let subject = isEdit ? existing.subject : 'Physics';
+  let mark = isEdit ? existing.mark : 'A';
+  overlay.innerHTML = `
+    <div class="sheet">
+      <h3>${isEdit?'Edit':'Log a'} Question <button class="closebtn" data-close>&times;</button></h3>
+      <div class="fieldlabel">Subject</div>
+      <div class="pillrow" id="subjPills"></div>
+      <div class="fieldlabel">Chapter</div>
+      <input class="inp" id="fChapter" placeholder="e.g. NLM, Bonding Part I" value="${isEdit?escapeAttr(existing.chapter):''}">
+      <div class="fieldlabel">Question source / number</div>
+      <input class="inp" id="fSource" placeholder="e.g. HC Verma pg 112 Q14" value="${isEdit?escapeAttr(existing.source):''}">
+      <div class="fieldlabel">Mark</div>
+      <div class="pillrow" id="markPills"></div>
+      <div class="fieldlabel">Notes (optional)</div>
+      <textarea class="inp" id="fNotes" rows="2" placeholder="Why wrong / what technique">${isEdit?escapeHtml(existing.notes||''):''}</textarea>
+      <button class="primarybtn" id="saveQBtn">${isEdit?'Save changes':'Save entry'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  function paintSubjPills(){
+    el('subjPills').innerHTML = SUBJECTS.map(s => `<div class="pill ${s===subject?'active':''}" style="${s===subject?`background:${SUBJECT_COLOR[s]};border-color:${SUBJECT_COLOR[s]}`:''}" data-s="${s}">${s}</div>`).join('');
+    el('subjPills').querySelectorAll('.pill').forEach(p => p.onclick = () => { subject = p.dataset.s; paintSubjPills(); });
+  }
+  function paintMarkPills(){
+    el('markPills').innerHTML = ['A','B','C'].map(m => `<div class="pill ${m===mark?'active':''}" style="${m===mark?`background:${MARK_COLOR[m]};border-color:${MARK_COLOR[m]}`:''}" data-m="${m}">${m} &middot; ${MARK_LABEL[m]}</div>`).join('');
+    el('markPills').querySelectorAll('.pill').forEach(p => p.onclick = () => { mark = p.dataset.m; paintMarkPills(); });
+  }
+  paintSubjPills(); paintMarkPills();
+
+  overlay.querySelector('[data-close]').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  el('saveQBtn').onclick = () => {
+    const chapter = el('fChapter').value.trim();
+    if(!chapter) { el('fChapter').focus(); return; }
+    const source = el('fSource').value.trim() || '—';
+    const notes = el('fNotes').value.trim();
+    if(isEdit){
+      questions = questions.map(q => q.id===existing.id ? {...q, subject, chapter, source, mark, notes} : q);
+    } else {
+      questions.unshift({ id: uid(), subject, chapter, source, mark, notes, createdAt: todayStr() });
+      markActivity();
+    }
+    save(LS_Q, questions);
+    overlay.remove();
+    showToast(isEdit?'Question updated ✓':'Logged ✓');
+    render();
+  };
+}
+
+function openRevisionForm(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  let subject = isEdit ? existing.subject : 'Physics';
+  let type = isEdit ? revisionTypeOf(existing) : 'HW';
+  overlay.innerHTML = `
+    <div class="sheet">
+      <h3>${isEdit?'Edit':'Log a'} Revision Session <button class="closebtn" data-close>&times;</button></h3>
+      <div class="fieldlabel">Subject</div>
+      <div class="pillrow" id="rSubjPills"></div>
+      <div class="fieldlabel">Chapter</div>
+      <input class="inp" id="rChapter" placeholder="e.g. NLM, Bonding Part I" value="${isEdit?escapeAttr(existing.chapter):''}">
+      <div class="fieldlabel">Type</div>
+      <div class="pillrow pillrow-wrap" id="rTypePills"></div>
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1;">
+          <div class="fieldlabel">Attempted</div>
+          <input class="inp" id="rAttempted" type="number" placeholder="e.g. 15" value="${isEdit?existing.attempted:''}">
+        </div>
+        <div style="flex:1;">
+          <div class="fieldlabel">Correct</div>
+          <input class="inp" id="rCorrect" type="number" placeholder="e.g. 11" value="${isEdit?existing.correct:''}">
+        </div>
+      </div>
+      <div class="fieldlabel">Date</div>
+      <input class="inp" id="rDate" type="date" value="${isEdit?existing.date:todayStr()}">
+      <div class="fieldlabel">Notes (optional)</div>
+      <textarea class="inp" id="rNotes" rows="2" placeholder="What's still shaky">${isEdit?escapeHtml(existing.notes||''):''}</textarea>
+      <button class="primarybtn" id="saveRBtn">${isEdit?'Save changes':'Save session'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  function paintSubjPills(){
+    el('rSubjPills').innerHTML = SUBJECTS.map(s => `<div class="pill ${s===subject?'active':''}" style="${s===subject?`background:${SUBJECT_COLOR[s]};border-color:${SUBJECT_COLOR[s]}`:''}" data-s="${s}">${s}</div>`).join('');
+    el('rSubjPills').querySelectorAll('.pill').forEach(p => p.onclick = () => { subject = p.dataset.s; paintSubjPills(); });
+  }
+  function paintTypePills(){
+    el('rTypePills').innerHTML = REVISION_TYPES.map(t => `<div class="pill ${t===type?'active':''}" style="flex:0 1 auto; ${t===type?`background:${REVISION_TYPE_COLOR[t]};border-color:${REVISION_TYPE_COLOR[t]}`:''}" data-t="${t}">${t}</div>`).join('');
+    el('rTypePills').querySelectorAll('.pill').forEach(p => p.onclick = () => { type = p.dataset.t; paintTypePills(); });
+  }
+  paintSubjPills(); paintTypePills();
+
+  overlay.querySelector('[data-close]').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  el('saveRBtn').onclick = () => {
+    const chapter = el('rChapter').value.trim();
+    const attempted = Number(el('rAttempted').value);
+    const correct = Number(el('rCorrect').value);
+    if(!chapter || !attempted) { el('rChapter').focus(); return; }
+    if(isEdit){
+      revisions = revisions.map(r => r.id===existing.id ? {...r, subject, chapter, type, attempted, correct: correct||0, date: el('rDate').value || todayStr(), notes: el('rNotes').value.trim()} : r);
+    } else {
+      revisions.unshift({
+        id: uid(), subject, chapter, type, attempted, correct: correct||0,
+        date: el('rDate').value || todayStr(), notes: el('rNotes').value.trim()
+      });
+      markActivity();
+    }
+    save(LS_R, revisions);
+    overlay.remove();
+    showToast(isEdit?'Session updated ✓':'Session logged ✓');
+    render();
+  };
+}
+
+function openTestForm(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="sheet">
+      <h3>${isEdit?'Edit':'Log a'} Test <button class="closebtn" data-close>&times;</button></h3>
+      <div class="fieldlabel">Test name</div>
+      <input class="inp" id="tName" placeholder="e.g. BTEST-3" value="${isEdit?escapeAttr(existing.name):''}">
+      <div class="fieldlabel">Date</div>
+      <input class="inp" id="tDate" type="date" value="${isEdit?existing.date:todayStr()}">
+      <div style="display:flex; gap:8px;">
+        <div style="flex:1;">
+          <div class="fieldlabel">Score</div>
+          <input class="inp" id="tScore" type="number" placeholder="e.g. 142" value="${isEdit?existing.score:''}">
+        </div>
+        <div style="flex:1;">
+          <div class="fieldlabel">Total marks</div>
+          <input class="inp" id="tTotal" type="number" placeholder="e.g. 300" value="${isEdit?existing.total:''}">
+        </div>
+      </div>
+      <div class="fieldlabel">Subject-wise score (optional)</div>
+      <div style="display:flex; gap:6px; margin-bottom:13px;">
+        <input class="inp" id="tPhy" placeholder="Physics" style="margin-bottom:0;" value="${isEdit?escapeAttr(existing.phy||''):''}">
+        <input class="inp" id="tChem" placeholder="Chem" style="margin-bottom:0;" value="${isEdit?escapeAttr(existing.chem||''):''}">
+        <input class="inp" id="tMaths" placeholder="Maths" style="margin-bottom:0;" value="${isEdit?escapeAttr(existing.maths||''):''}">
+      </div>
+      <div class="fieldlabel">Key mistakes / what to fix</div>
+      <textarea class="inp" id="tMistakes" rows="3" placeholder="e.g. Silly errors in NLM, ran out of time in Chem">${isEdit?escapeHtml(existing.mistakes||''):''}</textarea>
+      <button class="primarybtn" id="saveTBtn">${isEdit?'Save changes':'Save test'}</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.querySelector('[data-close]').onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  el('saveTBtn').onclick = () => {
+    const name = el('tName').value.trim();
+    const score = el('tScore').value;
+    const total = el('tTotal').value;
+    if(!name || !score || !total) return;
+    const payload = {
+      name, date: el('tDate').value || todayStr(),
+      score: Number(score), total: Number(total),
+      phy: el('tPhy').value.trim(), chem: el('tChem').value.trim(), maths: el('tMaths').value.trim(),
+      mistakes: el('tMistakes').value.trim()
+    };
+    if(isEdit){
+      tests = tests.map(t => t.id===existing.id ? {...t, ...payload} : t);
+    } else {
+      tests.unshift({ id: uid(), ...payload });
+      markActivity();
+    }
+    tests.sort((a,b)=> a.date < b.date ? 1 : -1);
+    save(LS_T, tests);
+    overlay.remove();
+    showToast(isEdit?'Test updated ✓':'Test logged ✓');
+    render();
+  };
+}
+
+render();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
